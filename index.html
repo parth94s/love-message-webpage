@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Message For Jui</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            /* Romantic background style matching a perfect love theme video loop */
+            background: linear-gradient(135deg, #ffccd5 0%, #ff85a2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+        }
+
+        /* Ambient floating hearts in the background */
+        .bg-hearts-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .bg-heart {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 24px;
+            animation: floatUp 5s linear infinite;
+            bottom: -50px;
+        }
+
+        .card-container {
+            text-align: center;
+            width: 85%;
+            max-width: 380px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            z-index: 2;
+        }
+
+        /* Sequential screen transition management */
+        .screen {
+            display: none;
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .screen.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Heart animation */
+        .heart-pulse {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            background-color: #ff3366; 
+            margin: 0 auto 40px auto;
+            transform: rotate(-45deg);
+            animation: heartbeat 1.2s infinite ease-in-out;
+            box-shadow: 0 0 30px rgba(255, 51, 102, 0.6); 
+        }
+
+        .heart-pulse:before,
+        .heart-pulse:after {
+            content: "";
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-color: #ff3366;
+            border-radius: 50%;
+        }
+        .heart-pulse:before { top: -40px; left: 0; }
+        .heart-pulse:after { top: 0; left: 40px; }
+
+        h2 {
+            color: #fff;
+            font-size: 20px;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.15);
+        }
+
+        /* Enter Button styling */
+        .enter-btn {
+            background-color: #fff;
+            color: #ff3366;
+            border: none;
+            padding: 14px 45px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 51, 102, 0.3);
+            transition: transform 0.2s;
+        }
+        .enter-btn:active {
+            transform: scale(0.95);
+        }
+
+        .emoji-container, .floating-hearts {
+            font-size: 55px;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        .welcome-text {
+            color: #fff;
+            font-size: 38px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .final-quote {
+            color: #fff;
+            font-size: 28px;
+            font-style: italic;
+            font-weight: bold;
+            line-height: 1.4;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Keyframes Animations */
+        @keyframes heartbeat {
+            0% { transform: rotate(-45deg) scale(1); }
+            25% { transform: rotate(-45deg) scale(1.12); }
+            40% { transform: rotate(-45deg) scale(1.02); }
+            60% { transform: rotate(-45deg) scale(1.18); }
+            100% { transform: rotate(-45deg) scale(1); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-105vh) scale(1.2); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-hearts-container" id="bg-hearts"></div>
+
+    <div class="card-container">
+        <!-- Screen 1: Landing with Enter Action -->
+        <div id="screen-landing" class="screen active">
+            <div class="heart-pulse"></div>
+            <h2>A special message is waiting for you...</h2>
+            <button class="enter-btn" onclick="nextScreen()">Enter ❤️</button>
+        </div>
+
+        <!-- Screen 2: Welcome Presentation -->
+        <div id="screen-welcome" class="screen">
+            <div class="emoji-container">✨ 🥰 ✨</div>
+            <h1 class="welcome-text">Welcome, Jui!</h1>
+        </div>
+
+        <!-- Screen 3: Final Aesthetic Quote -->
+        <div id="screen-wish" class="screen">
+            <div class="floating-hearts">💖 💝 💕</div>
+            <p class="final-quote">Have a good day, beautiful</p>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+
+        // Background script loop to automatically spawn floating particles
+        function createBgHearts() {
+            const container = document.getElementById('bg-hearts');
+            const heartSymbols = ['❤️', '💖', '💕', '💗', '🌸'];
+            
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('bg-heart');
+                heart.innerText = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 2 + 4) + 's'; 
+                container.appendChild(heart);
+                
+                setTimeout(() => { heart.remove(); }, 6000);
+            }, 350);
+        }
+
+        window.onload = createBgHearts;
+
+        function nextScreen() {
+            const landing = document.getElementById('screen-landing');
+            const welcome = document.getElementById('screen-welcome');
+            const wish = document.getElementById('screen-wish');
+
+            if (currentStep === 1) {
+                landing.classList.remove('active');
+                setTimeout(() => {
+                    landing.style.display = 'none';
+                    welcome.style.display = 'block';
+                    setTimeout(() => welcome.classList.add('active'), 50);
+                    currentStep = 2;
+                    // Transitions into screen 3 precisely after 2.6 seconds
+                    setTimeout(nextScreen, 2600);
+                }, 800);
+            } else if (currentStep === 2) {
+                welcome.classList.remove('active');
+                setTimeout(() => {
+                    welcome.style.display = 'none';
+                    wish.style.display = 'block';
+                    setTimeout(() => wish.classList.add('active'), 50);
+                }, 800);
+            }
+        }
+    </script>
+</body>
+</html>
