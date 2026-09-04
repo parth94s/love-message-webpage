@@ -1,0 +1,8 @@
+{
+  "name": "love-message-webpage",
+  "version": "1.0.0",
+  "description": "A romantic love message webpage",
+  "scripts": {
+    "start": "python -m http.server 8000"
+  }
+}
